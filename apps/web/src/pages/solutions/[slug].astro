@@ -1,0 +1,96 @@
+---
+import IntentLoopCta from "../../components/IntentLoopCta.astro";
+import InternalLinkGraph from "../../components/InternalLinkGraph.astro";
+import RfqPanel from "../../components/RfqPanel.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCaseStudies, getContentPages, getExperts, getProducts, getSiteSettings } from "../../lib/content";
+import { organizationSchema } from "../../lib/schema";
+import { getSolution, solutions } from "../../lib/solutions";
+
+export function getStaticPaths() {
+  return solutions.map((solution) => ({ params: { slug: solution.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, products, topics, cases, experts] = await Promise.all([
+  getSiteSettings(),
+  getProducts(),
+  getContentPages(),
+  getCaseStudies(),
+  getExperts()
+]);
+const solution = getSolution(slug!);
+
+if (!solution) {
+  return Astro.redirect("/");
+}
+
+const recommendedProducts = products.filter((product) => solution.recommendedProductSlugs.includes(product.slug));
+const relatedTopics = topics.filter((topic) => solution.relatedTopicSlugs.includes(topic.slug));
+const heroImage = recommendedProducts[0]?.heroImage || products[0]?.heroImage;
+---
+
+<BaseLayout
+  title={`${solution.title} | TitanLaser Solutions`}
+  description={solution.heroAnswer}
+  pathname={`/solutions/${solution.slug}`}
+  siteUrl={settings.siteUrl}
+  jsonLdData={organizationSchema(settings)}
+>
+  <section class="hero" style={`--hero-image: url('${heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">{solution.industry} solution</p>
+      <h1>{solution.title}</h1>
+      <p class="lead">{solution.heroAnswer}</p>
+      <a class="button" href="/request-quote">Request solution quote</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Buyer pains this solution addresses</h2>
+      <div class="grid">
+        {solution.pains.map((pain) => (
+          <article class="card"><h3>{pain}</h3></article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Recommended machine path</h2>
+      <div class="grid">
+        {recommendedProducts.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <a class="button secondary" href={`/products/${product.slug}`}>Open product page</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Application knowledge graph</h2>
+      <InternalLinkGraph products={recommendedProducts} topics={relatedTopics} cases={cases} experts={experts} />
+    </div>
+  </section>
+
+  <section class="section band">
+    <RfqPanel title="Request an application-specific cutting plan" body={`Send ${solution.industry.toLowerCase()} material, part size, thickness range, and monthly tonnage. TitanLaser will map the use case to a machine and process path.`} />
+  </section>
+
+  <section class="section">
+    <IntentLoopCta
+      title="Compare machines before sending the RFQ"
+      body="If your application sits between mid-thickness sheet and high-power plate cutting, compare 12 kW and 30 kW before finalizing the inquiry."
+      primaryHref="/compare/12kw-vs-30kw-fiber-laser"
+      primaryLabel="Compare 12 kW vs 30 kW"
+      secondaryHref="/tools/running-cost-calculator"
+      secondaryLabel="Estimate cost"
+    />
+  </section>
+</BaseLayout>

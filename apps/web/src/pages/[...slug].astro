@@ -1,0 +1,281 @@
+---
+import RfqPanel from "../components/RfqPanel.astro";
+import TrustProofPanel from "../components/TrustProofPanel.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getExperts, getProducts, getSiteSettings } from "../lib/content";
+import { catalogPages, type CatalogPage } from "../lib/pageCatalog";
+
+export function getStaticPaths() {
+  const explicitRoutes = new Set(["/contact", "/quote-cart", "/product-selector", "/download-center"]);
+  return catalogPages.filter((page) => !explicitRoutes.has(page.path)).map((page) => ({
+    params: { slug: page.path.replace(/^\//, "") },
+    props: { page }
+  }));
+}
+
+const { page } = Astro.props as { page: CatalogPage };
+const settings = await getSiteSettings();
+const experts = await getExperts();
+const products = await getProducts();
+const expert = experts[0];
+const relatedPages = catalogPages.filter((item) => item.group === page.group && item.path !== page.path).slice(0, 6);
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: page.title,
+  description: page.description,
+  url: new URL(page.path, settings.siteUrl).toString(),
+  about: ["fiber laser cutting machine", "B2B export inquiry", "industrial equipment supplier"],
+  mainEntity: {
+    "@type": "Organization",
+    name: settings.brandName,
+    url: settings.siteUrl
+  }
+};
+---
+
+<BaseLayout title={`${page.title} | ${settings.brandName}`} description={page.description} pathname={page.path} siteUrl={settings.siteUrl} jsonLdData={schema}>
+  <section class="hero" style={`--hero-image: url('${page.image}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">{page.kicker}</p>
+      <h1>{page.title}</h1>
+      <p class="lead">{page.description}</p>
+      <div class="hero-actions">
+        <a class="button" href={page.primaryCta.href}>{page.primaryCta.label}</a>
+        <a class="button secondary" href={page.secondaryCta.href}>{page.secondaryCta.label}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner two-column">
+      <div>
+        <p class="eyebrow">Page #{page.number} in the preset B2B site map</p>
+        <h2>Built as a conversion-ready knowledge graph node</h2>
+        <p class="lead">
+          This demo page is not a placeholder. It has a defined buyer intent, visible proof signals, internal links, and RFQ routing so target customers can see how a full export inquiry site scales beyond a brochure.
+        </p>
+      </div>
+      <article class="card">
+        <h3>Buyer fit</h3>
+        <p>{page.audience}</p>
+        <ul class="proof-strip">
+          {page.highlights.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Page content modules</h2>
+      <div class="grid">
+        {page.sections.map((section) => (
+          <article class="card">
+            <h3>{section.heading}</h3>
+            <p>{section.body}</p>
+            <ul>
+              {section.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {page.path === "/cookie-policy" && (
+    <section class="section">
+      <div class="section-inner">
+        <h2>Consent preference center demo</h2>
+        <p class="lead">This visual module shows how the production cookie consent center should separate required and optional tracking categories.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Purpose</th>
+                <th>Examples</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Essential</td><td>Keep RFQ forms, session security, and consent records working.</td><td>CSRF token, consent version, session route</td><td>Always on</td></tr>
+              <tr><td>Preferences</td><td>Remember language, country, currency, and unit selections.</td><td>locale, region, unitSystem, recentlyViewed</td><td>Optional</td></tr>
+              <tr><td>Analytics</td><td>Understand aggregate page performance and conversion paths.</td><td>page views, calculator event, download event</td><td>Optional</td></tr>
+              <tr><td>Marketing</td><td>Measure campaign landing pages and retargeting audiences.</td><td>ad click ID, campaign source, remarketing tag</td><td>Optional</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="preference-actions">
+          <button class="button" type="button">Accept all demo categories</button>
+          <button class="button secondary" type="button">Reject non-essential</button>
+          <button class="button secondary" type="button">Save custom choices</button>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {page.path === "/hreflang-hub" && (
+    <section class="section">
+      <div class="section-inner">
+        <h2>Planned language and market map</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Language</th><th>Locale</th><th>Example path</th><th>Market adaptation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>English global</td><td>en</td><td>/en/products</td><td>Default international RFQ route</td></tr>
+              <tr><td>Spanish</td><td>es</td><td>/es/quote-cart</td><td>LATAM and Spain distributor notes</td></tr>
+              <tr><td>German</td><td>de</td><td>/de/privacy-policy</td><td>DACH/EU compliance, privacy, and technical documentation emphasis</td></tr>
+              <tr><td>Portuguese</td><td>pt</td><td>/pt/region-currency</td><td>Brazil, Portugal, and Portuguese-speaking export markets</td></tr>
+              <tr><td>x-default</td><td>x-default</td><td>/</td><td>Fallback global English routing</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {page.path === "/region-currency" && (
+    <section class="section">
+      <div class="section-inner">
+        <h2>Region settings used by RFQ routing</h2>
+        <div class="grid">
+          {[
+            ["Southeast Asia", "USD quote baseline", "Metric", "380V/50Hz, nitrogen cost prompt, sea freight to Vietnam/Thailand/Malaysia"],
+            ["Middle East", "USD or AED reference", "Metric", "High ambient temperature review, Arabic contact routing, CIF/DAP discussion"],
+            ["Europe", "EUR estimate", "Metric", "CE documentation, GDPR consent, importer compliance files"],
+            ["North America", "USD", "Metric + imperial", "480V/60Hz review, crating details, accessibility and privacy review"],
+            ["Africa", "USD", "Metric", "Spare-part package recommendation, remote training, port and inland logistics"]
+          ].map(([region, currency, units, note]) => (
+            <article class="card">
+              <h3>{region}</h3>
+              <p><strong>Currency:</strong> {currency}</p>
+              <p><strong>Units:</strong> {units}</p>
+              <p>{note}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {page.path === "/maintenance" && (
+    <section class="section">
+      <div class="section-inner maintenance-status">
+        <article class="card">
+          <p class="eyebrow">Deployment status</p>
+          <h2>Critical buyer paths to verify before going live</h2>
+          <ul>
+            <li>Homepage, PLP, PDP, RFQ, Contact, Calculator, Sitemap, Robots</li>
+            <li>CMS API availability for published products, cases, experts, FAQs, and content pages</li>
+            <li>Form destination, analytics events, canonical URL, sitemap URL count, and image loading</li>
+          </ul>
+        </article>
+        <article class="card">
+          <p class="eyebrow">Buyer fallback</p>
+          <h2>Emergency conversion route</h2>
+          <p>During planned downtime, keep a sales email, distributor contact, and downloadable RFQ checklist visible so buyers can still send project requirements.</p>
+          <a class="button" href="/request-quote">Open RFQ path</a>
+        </article>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Relevant TitanLaser products</h2>
+      <div class="grid">
+        {products.map((product) => (
+          <article class="card product-mini">
+            <img src={product.heroImage} alt={`${product.model} fiber laser cutting machine`} loading="lazy" />
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <ul class="proof-strip">
+              <li>{product.powerKw} kW</li>
+              <li>{product.repeatPositioningAccuracy}</li>
+            </ul>
+            <a class="button secondary" href={`/products/${product.slug}`}>View product</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <TrustProofPanel expert={expert} compact />
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Related pages in this silo</h2>
+      <p class="lead">These links keep the same commercial intent connected across product evidence, technical information, trust proof, and conversion pages.</p>
+      <div class="grid">
+        {relatedPages.map((item) => (
+          <article class="card">
+            <p class="eyebrow">{item.kicker}</p>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <a class="button secondary" href={item.path}>Open page</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <RfqPanel title={`Ask TitanLaser about ${page.title}`} body="Share your product, material, market, delivery, and compliance requirements. The demo RFQ flow shows how a real B2B inquiry site can turn every information page into a qualified sales conversation." />
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .two-column {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .product-mini {
+    display: grid;
+    gap: 14px;
+  }
+
+  .product-mini img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .preference-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .maintenance-status {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    gap: 18px;
+  }
+
+  @media (max-width: 760px) {
+    .two-column {
+      grid-template-columns: 1fr;
+    }
+
+    .maintenance-status {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

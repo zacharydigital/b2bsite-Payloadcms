@@ -1,0 +1,16 @@
+---
+import type { Faq } from "../lib/content";
+
+const { faqs } = Astro.props as { faqs: Faq[] };
+---
+
+{faqs.length > 0 && (
+  <div class="grid">
+    {faqs.map((faq) => (
+      <article class="card">
+        <h3>{faq.question}</h3>
+        <p>{faq.answer}</p>
+      </article>
+    ))}
+  </div>
+)}

@@ -1,0 +1,41 @@
+---
+const {
+  title = "Request an engineering quote",
+  body = "Send material, thickness, monthly tonnage, local gas cost, power supply, and target edge quality. TitanLaser can return a model recommendation and process plan.",
+  productModel = ""
+} = Astro.props as {
+  title?: string;
+  body?: string;
+  productModel?: string;
+};
+---
+
+<section class="rfq-panel">
+  <div>
+    <p class="eyebrow">Inquiry conversion layer</p>
+    <h2>{title}</h2>
+    <p>{body}</p>
+    <ul class="proof-strip">
+      <li>Material mix</li>
+      <li>Thickness range</li>
+      <li>Monthly tonnage</li>
+      <li>Gas and power cost</li>
+      <li>Target edge quality</li>
+    </ul>
+  </div>
+  <form class="rfq-form" method="get" action={`mailto:sales@titanlaser.example`}>
+    <label>
+      Project focus
+      <input name="subject" value={productModel ? `RFQ for ${productModel}` : "TitanLaser RFQ"} />
+    </label>
+    <label>
+      Work email
+      <input name="email" type="email" placeholder="buyer@company.com" />
+    </label>
+    <label>
+      Requirement summary
+      <textarea name="body" rows="5" placeholder="Material, thickness, cutting volume, country, gas supply, deadline"></textarea>
+    </label>
+    <button class="button" type="submit">Prepare RFQ email</button>
+  </form>
+</section>

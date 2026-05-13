@@ -1,0 +1,319 @@
+---
+import "../../components/react/interactive.css";
+import "../../components/react/pdp.css";
+import BottomStickyCtaBar from "../../components/react/BottomStickyCtaBar";
+import ExpandableSpecTable from "../../components/react/ExpandableSpecTable";
+import PdpDownloadsGateIsland from "../../components/react/PdpDownloadsGateIsland";
+import PdpFaqAccordionIsland from "../../components/react/PdpFaqAccordionIsland";
+import PdpGalleryIsland from "../../components/react/PdpGalleryIsland";
+import StickyInquiryFormIsland from "../../components/react/StickyInquiryFormIsland";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProduct, getProducts, getSiteSettings } from "../../lib/content";
+import { breadcrumbSchema, faqPageSchema, productSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({ params: { slug: product.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, product, allProducts] = await Promise.all([getSiteSettings(), getProduct(slug!), getProducts()]);
+
+if (!product) {
+  return Astro.redirect("/");
+}
+
+const quoteProduct = {
+  slug: product.slug,
+  model: product.model,
+  title: product.title,
+  powerKw: product.powerKw
+};
+const relatedProducts = allProducts.filter((item) => product.relatedProductSlugs.includes(item.slug) && item.slug !== product.slug);
+const terms = [
+  { label: "MOQ", value: product.commercialTerms.moq, note: "Flexible for distributor and project orders" },
+  { label: "Lead Time", value: product.commercialTerms.leadTime, note: "Final schedule confirmed after configuration" },
+  { label: "Payment", value: product.commercialTerms.payment, note: "Milestone terms available for qualified buyers" },
+  { label: "Sample", value: product.commercialTerms.sample, note: "Cut sample and video proof supported" },
+  { label: "Packaging", value: product.commercialTerms.packaging, note: "Photo record before shipment" },
+  { label: "Export To", value: product.commercialTerms.exportMarkets, note: "FOB, CIF, and DAP workflows" }
+];
+const schema = [
+  productSchema(product, settings),
+  breadcrumbSchema(
+    [
+      { name: "Home", path: "/" },
+      { name: "Products", path: "/products" },
+      { name: product.model, path: `/products/${product.slug}` }
+    ],
+    settings
+  ),
+  faqPageSchema(product.faqs)
+];
+---
+
+<BaseLayout
+  title={`${product.model} | Get Latest Price & Datasheet`}
+  description={product.shortDescription}
+  pathname={`/products/${product.slug}`}
+  siteUrl={settings.siteUrl}
+  jsonLdData={schema}
+>
+  <article class="pdp-page">
+    <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a href="/products">Products</a>
+      <span>/</span>
+      <span>{product.model}</span>
+    </nav>
+
+    <section class="pdp-hero">
+      <div class="pdp-shell">
+        <div class="pdp-main-flow">
+          <PdpGalleryIsland client:load productModel={product.model} media={product.galleryMedia} />
+          <section class="pdp-summary">
+            <p class="eyebrow">{product.series} product detail page</p>
+            <h1>{product.model} {product.powerKw} kW Fiber Laser Cutting Machine</h1>
+            <p class="pdp-subheadline">{product.shortDescription}</p>
+            <a class="pdp-price-placeholder" href="#pdp-inquiry">Get Latest Price →</a>
+            <ul class="proof-strip">
+              <li>{product.powerKw} kW laser source</li>
+              <li>{product.repeatPositioningAccuracy} repeat accuracy</li>
+              <li>{product.servoMotorBrand} servo</li>
+              <li>{product.complianceStandards.join(" / ")}</li>
+            </ul>
+            <div class="pdp-mini-terms">
+              {terms.slice(0, 4).map((term) => (
+                <div class="pdp-mini-term">
+                  <span>{term.label}</span>
+                  <strong>{term.value}</strong>
+                </div>
+              ))}
+            </div>
+            <div class="interactive-actions">
+              <a class="button" href="#pdp-inquiry">Request Quote</a>
+              <a class="button secondary" href="#pdp-downloads">Download Datasheet</a>
+              <a class="button secondary" href={product.inquiryDefaults.whatsappUrl}>WhatsApp Us</a>
+            </div>
+            <ul class="proof-strip">
+              <li>{product.inquiryDefaults.replySla}</li>
+              <li>NDA available</li>
+              <li>Global shipping</li>
+            </ul>
+          </section>
+        </div>
+
+        <aside class="pdp-sidebar" id="pdp-inquiry">
+          <StickyInquiryFormIsland client:load product={quoteProduct} defaults={product.inquiryDefaults} />
+        </aside>
+      </div>
+    </section>
+
+    <section class="pdp-section band" aria-label="Key commercial terms">
+      <div class="pdp-section-inner">
+        <div class="pdp-terms-strip">
+          {terms.map((term) => (
+            <div class="pdp-term">
+              <span>{term.label}</span>
+              <strong>{term.value}</strong>
+              <p>{term.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="pdp-section" aria-label="Features and advantages">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">FABE proof</p>
+          <h2>Features, advantages, buyer benefits, and evidence</h2>
+          <p class="lead">Every selling point connects a technical feature to a buyer outcome and a verifiable proof point.</p>
+        </div>
+        {product.featureAdvantages.map((item) => (
+          <article class="pdp-fabe-row">
+            <div>
+              <h3>{item.title}</h3>
+              <div class="pdp-fabe-grid">
+                <div><strong>Feature</strong><p>{item.feature}</p></div>
+                <div><strong>Advantage</strong><p>{item.advantage}</p></div>
+                <div><strong>Benefit</strong><p>{item.benefit}</p></div>
+                <div><strong>Evidence</strong><p>{item.evidence}</p></div>
+              </div>
+              {item.reportLink && <p><a class="button secondary" href={item.reportLink}>See proof →</a></p>}
+            </div>
+            <img src={item.image} alt={`${item.title} evidence image`} loading="lazy" />
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="pdp-section band" aria-label="Specifications">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">Structured specs</p>
+          <h2>Technical specifications and cutting capability</h2>
+          <p class="lead">This table uses the same structured fields that feed JSON-LD additionalProperty values.</p>
+        </div>
+        <ExpandableSpecTable client:load productModel={product.model} materialCapabilities={product.materialCapabilities} technicalSpecs={product.technicalSpecs} />
+      </div>
+    </section>
+
+    <section class="pdp-section" aria-label="Applications">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">Application fit</p>
+          <h2>Where this machine fits best</h2>
+          <p class="lead">Application cards connect PDP commercial intent to solution pages and topic clusters.</p>
+        </div>
+        <div class="grid">
+          {product.applications.map((application) => (
+            <article class="card pdp-application-card">
+              <img src={application.image} alt={`${application.name} application`} loading="lazy" />
+              <h3>{application.name}</h3>
+              <p>{application.summary}</p>
+              <a class="button secondary" href={application.linkedSolutionPath}>Open solution →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="pdp-section band" aria-label="Certifications and compliance">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">Trust proof</p>
+          <h2>Certifications and compliance evidence</h2>
+          <p class="lead">Demo certificates are clearly labeled and can be requested as a compliance pack.</p>
+        </div>
+        <div class="grid">
+          {product.certifications.map((cert) => (
+            <article class="card pdp-cert-card">
+              <img src={cert.image} alt={`${cert.name} certificate preview`} loading="lazy" />
+              <h3>{cert.name}</h3>
+              <p><strong>{cert.level === "product" ? "Product-level" : "Factory-level"}</strong></p>
+              <p>Issuer: {cert.issuer}</p>
+              <p>No.: {cert.certificateNo}</p>
+              <p>Valid until: {cert.validUntil}</p>
+              {cert.requestable && <a class="button secondary" href="#pdp-downloads">Request full compliance pack →</a>}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="pdp-section" aria-label="Manufacturing and quality control">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">Manufacturing and QC</p>
+          <h2>Factory process and quality control</h2>
+          <p class="lead">{product.manufacturingQc.capacityText}</p>
+        </div>
+        <div class="pdp-qc-grid">
+          <div class="pdp-process">
+            {product.manufacturingQc.processSteps.map((step) => (
+              <article class="pdp-process-step">
+                <h3>{step.step}</h3>
+                <p>{step.detail}</p>
+              </article>
+            ))}
+          </div>
+          <div class="grid">
+            {product.manufacturingQc.factoryImages.map((image) => (
+              <article class="pdp-qc-image">
+                <img src={image.url} alt={image.alt} loading="lazy" />
+                <p>{image.caption}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {product.relatedCases.length > 0 && (
+      <section class="pdp-section band" aria-label="Case study">
+        <div class="pdp-section-inner">
+          <div class="pdp-section-head">
+            <p class="eyebrow">Field evidence</p>
+            <h2>Related customer case study</h2>
+          </div>
+          <div class="grid">
+            {product.relatedCases.map((caseStudy) => (
+              <article class="card pdp-case-card">
+                <img src={caseStudy.heroImage} alt={caseStudy.title} loading="lazy" />
+                <h3>{caseStudy.title}</h3>
+                <p>{caseStudy.summary}</p>
+                <ul class="proof-strip">
+                  <li>{caseStudy.country}</li>
+                  <li>{caseStudy.customerIndustry}</li>
+                  {caseStudy.measuredResults.slice(0, 2).map((result) => <li>{result.metric}: {result.value}</li>)}
+                </ul>
+                <a class="button secondary" href={`/case-studies/${caseStudy.slug}`}>View full case study →</a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="pdp-section" id="pdp-downloads" aria-label="Downloads">
+      <div class="pdp-section-inner">
+        <PdpDownloadsGateIsland client:load productModel={product.model} downloads={product.downloads} />
+      </div>
+    </section>
+
+    <section class="pdp-section band" aria-label="Frequently asked questions">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">Procurement FAQ</p>
+          <h2>Common buying questions</h2>
+          <p class="lead">Answers stay visible on the page and feed FAQPage semantic markup without relying on rich-result display.</p>
+        </div>
+        <PdpFaqAccordionIsland client:load productModel={product.model} faqs={product.faqs} />
+      </div>
+    </section>
+
+    <section class="pdp-section" aria-label="Related products">
+      <div class="pdp-section-inner">
+        <div class="pdp-section-head">
+          <p class="eyebrow">Cross recommendation</p>
+          <h2>Related products</h2>
+        </div>
+        <div class="grid">
+          {relatedProducts.map((item) => (
+            <article class="card pdp-application-card">
+              <img src={item.heroImage} alt={`${item.model} related product`} loading="lazy" />
+              <h3>{item.model}</h3>
+              <p>{item.shortDescription}</p>
+              <ul class="proof-strip">
+                <li>{item.powerKw} kW</li>
+                <li>{item.repeatPositioningAccuracy}</li>
+              </ul>
+              <a class="button secondary" href={`/products/${item.slug}`}>View product →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="pdp-section band" aria-label="Final inquiry CTA">
+      <div class="pdp-section-inner">
+        <div class="pdp-final-cta">
+          <div>
+            <p class="eyebrow">Ready to source {product.model}?</p>
+            <h2>Let's validate your cutting plan.</h2>
+            <p>{product.inquiryDefaults.replySla}. Sample cutting, NDA review, installation readiness, and compliance files are available for qualified buyers.</p>
+            <div class="interactive-actions">
+              <a class="button" href="#pdp-inquiry">Request a Quote</a>
+              <a class="button secondary" href="/book-demo">Schedule a Call</a>
+            </div>
+          </div>
+          <StickyInquiryFormIsland client:load product={quoteProduct} defaults={product.inquiryDefaults} variant="final" />
+        </div>
+      </div>
+    </section>
+
+    <BottomStickyCtaBar client:load product={quoteProduct} whatsappUrl={product.inquiryDefaults.whatsappUrl} />
+  </article>
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getContentPage, getContentPages, getSiteSettings } from "../../lib/content";
+import { definedTermSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const pages = await getContentPages("glossary");
+  return pages.map((page) => ({ params: { slug: page.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, page] = await Promise.all([getSiteSettings(), getContentPage(slug!)]);
+
+if (!page) {
+  return Astro.redirect("/");
+}
+---
+
+<BaseLayout
+  title={`${page.title} | TitanLaser Glossary`}
+  description={page.seoSummary}
+  pathname={`/glossary/${page.slug}`}
+  siteUrl={settings.siteUrl}
+  jsonLdData={definedTermSchema(page, settings)}
+>
+  <section class="section">
+    <div class="section-inner content-body">
+      <p class="eyebrow">Glossary term</p>
+      <h1>{page.title}</h1>
+      <p class="lead">{page.heroAnswer}</p>
+      {page.bodyBlocks.map((block) => (
+        <section>
+          <h2>{block.heading}</h2>
+          <p>{block.content}</p>
+        </section>
+      ))}
+    </div>
+  </section>
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Products using this concept</h2>
+      <div class="grid">
+        {page.relatedProducts.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <a class="button secondary" href={`/products/${product.slug}`}>Open product</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

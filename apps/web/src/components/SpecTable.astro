@@ -1,0 +1,30 @@
+---
+import type { Product } from "../lib/content";
+
+const { product } = Astro.props as { product: Product };
+---
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Material</th>
+        <th>Max Thickness</th>
+        <th>Recommended Range</th>
+        <th>Assist Gas</th>
+        <th>Sample Speed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {product.materialCapabilities.map((capability) => (
+        <tr>
+          <td>{capability.material}</td>
+          <td>{capability.maxThicknessMm} mm</td>
+          <td>{capability.recommendedThicknessMm}</td>
+          <td>{capability.assistGas}</td>
+          <td>{capability.cuttingSpeedMMin} m/min</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

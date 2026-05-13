@@ -1,0 +1,158 @@
+---
+import FaqList from "../components/FaqList.astro";
+import IntentLoopCta from "../components/IntentLoopCta.astro";
+import InternalLinkGraph from "../components/InternalLinkGraph.astro";
+import SystemLayerMatrix from "../components/SystemLayerMatrix.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCaseStudies, getContentPages, getExperts, getProducts, getSiteSettings } from "../lib/content";
+import { organizationSchema, websiteSchema } from "../lib/schema";
+
+const settings = await getSiteSettings();
+const products = await getProducts();
+const cases = await getCaseStudies();
+const experts = await getExperts();
+const pillars = await getContentPages("pillar");
+const clusters = await getContentPages("cluster");
+const faqs = products.flatMap((product) => product.faqs).slice(0, 3);
+const topics = pillars.concat(clusters);
+---
+
+<BaseLayout
+  title={`${settings.brandName} | High-Power Fiber Laser Cutting Systems`}
+  description={settings.tagline}
+  pathname="/"
+  siteUrl={settings.siteUrl}
+  jsonLdData={[organizationSchema(settings), websiteSchema(settings)]}
+>
+  <section class="hero" style={`--hero-image: url('${products[1]?.heroImage || products[0]?.heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">SEO + AEO + GEO content system demo</p>
+      <h1>TitanLaser</h1>
+      <p class="lead">{settings.tagline}</p>
+      <a class="button" href="/tools/running-cost-calculator">Calculate cutting cost</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>From website tree to B2B knowledge graph</h2>
+      <p class="lead">TitanLaser is structured as a relationship network: product entities, topic clusters, glossary terms, field proof, experts, and calculators all reference the same data backbone.</p>
+      <div class="metric-row">
+        <div class="metric"><strong>{products.length}</strong><span>machine models</span></div>
+        <div class="metric"><strong>{cases.length}</strong><span>atomic case study</span></div>
+        <div class="metric"><strong>{clusters.length}</strong><span>topic cluster pages</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Content system layers for SEO, AEO, and GEO</h2>
+      <p class="lead">Each page type has a job: define entities, answer buyer questions, prove expertise, and move qualified visitors toward inquiry.</p>
+      <SystemLayerMatrix />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Product models</h2>
+      <div class="grid">
+        {products.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <ul class="proof-strip">
+              <li>{product.powerKw} kW</li>
+              <li>{product.repeatPositioningAccuracy}</li>
+              <li>{product.complianceStandards[0]}</li>
+            </ul>
+            <a class="button secondary" href={`/products/${product.slug}`}>View PDP</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Semantic content network</h2>
+      <div class="grid">
+        {pillars.concat(clusters).map((page) => (
+          <article class="card">
+            <p class="eyebrow">{page.type}</p>
+            <h3>{page.title}</h3>
+            <p>{page.heroAnswer}</p>
+            <a class="button secondary" href={page.type === "pillar" ? `/guides/${page.slug}` : `/topics/${page.slug}`}>Open page</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Internal link graph</h2>
+      <p class="lead">The site links money pages, knowledge support, and trust proof so crawlers can follow the complete buyer decision path.</p>
+      <InternalLinkGraph products={products} topics={topics} cases={cases} experts={experts} />
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>AEO-ready visible FAQs</h2>
+      <FaqList faqs={faqs} />
+    </div>
+  </section>
+
+  <section class="section">
+    <IntentLoopCta />
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Complete export inquiry site preset</h2>
+      <p class="lead">The demo now includes commercial conversion pages, PLP/category pages, technical downloads, trust proof, trade operations, campaign landing pages, portal concepts, legal pages, utility pages, and industry-specific equipment modules.</p>
+      <div class="grid">
+        <article class="card">
+          <h3>Buyer conversion flow</h3>
+          <p>Products, compare, quote cart, contact, sample request, demo booking, and thank-you pages are connected to RFQ intent.</p>
+          <a class="button secondary" href="/quote-cart">Open quote cart</a>
+        </article>
+        <article class="card">
+          <h3>Technical proof layer</h3>
+          <p>Specifications, CAD/3D model downloads, datasheets, SDS, certifications, video proof, compatibility, and cross-reference pages.</p>
+          <a class="button secondary" href="/specifications">Open specs hub</a>
+        </article>
+        <article class="card">
+          <h3>Full page matrix</h3>
+          <p>Use the HTML sitemap to review the complete preset site architecture for target customer demos.</p>
+          <a class="button secondary" href="/html-sitemap">Open sitemap</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Application solution pages</h2>
+      <p class="lead">Solution pages capture industry-specific intent before buyers know which product model fits.</p>
+      <div class="grid">
+        <article class="card">
+          <h3>Shipbuilding and heavy plate</h3>
+          <p>High-power cutting path for thick carbon steel, edge cleanup reduction, and validated shipyard use cases.</p>
+          <a class="button secondary" href="/solutions/shipbuilding-heavy-plate-laser-cutting">Open solution</a>
+        </article>
+        <article class="card">
+          <h3>Steel service centers</h3>
+          <p>Flexible model selection for mixed customer orders, cost-per-meter quoting, and utilization planning.</p>
+          <a class="button secondary" href="/solutions/steel-service-center-laser-cutting">Open solution</a>
+        </article>
+        <article class="card">
+          <h3>Machinery fabrication</h3>
+          <p>Mid-thickness sheet and repeatability-focused production for machinery parts and outsourced cutting replacement.</p>
+          <a class="button secondary" href="/solutions/machinery-fabrication-laser-cutting">Open solution</a>
+        </article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,61 @@
+---
+const { expert, compact = false } = Astro.props as {
+  expert?: {
+    name: string;
+    role: string;
+    slug: string;
+    credentials: string[];
+    projectHighlights: string[];
+  };
+  compact?: boolean;
+};
+
+const badges = ["CE export documentation", "ISO 9001 process control", "RoHS material compliance", "IEC 60825-1 laser safety"];
+const reviews = [
+  {
+    source: "Trustpilot integration slot",
+    score: "Production widget/API required",
+    quote: "Connect the official Trustpilot Business widget or API for live verified customer reviews."
+  },
+  {
+    source: "G2 integration slot",
+    score: "Production profile required",
+    quote: "Connect the official G2 profile or review feed when the supplier has a live G2 listing."
+  }
+];
+---
+
+<section class={compact ? "trust-panel compact" : "trust-panel"}>
+  <div>
+    <p class="eyebrow">E-E-A-T trust layer</p>
+    <h2>Author, badge, and review verification</h2>
+    <p>
+      This module keeps supplier trust signals visible beside technical content. In production, the review slots should be connected to official Trustpilot and G2 widgets or APIs; the demo does not fabricate third-party ratings for a fictional brand.
+    </p>
+  </div>
+  <div class="grid">
+    {expert && (
+      <article class="card">
+        <h3>{expert.name}</h3>
+        <p><strong>{expert.role}</strong></p>
+        <ul>
+          {expert.credentials.map((credential) => <li>{credential}</li>)}
+        </ul>
+        <a class="button secondary" href={`/experts/${expert.slug}`}>Verify author profile</a>
+      </article>
+    )}
+    <article class="card">
+      <h3>Trust badges</h3>
+      <ul class="proof-strip">
+        {badges.map((badge) => <li>{badge}</li>)}
+      </ul>
+    </article>
+    {reviews.map((review) => (
+      <article class="card">
+        <h3>{review.source}</h3>
+        <p><strong>{review.score}</strong></p>
+        <p>{review.quote}</p>
+      </article>
+    ))}
+  </div>
+</section>

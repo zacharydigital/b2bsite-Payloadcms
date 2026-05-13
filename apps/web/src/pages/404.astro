@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSiteSettings } from "../lib/content";
+
+const settings = await getSiteSettings();
+---
+
+<BaseLayout title={`Page Not Found | ${settings.brandName}`} description="TitanLaser could not find this page. Continue to products, quote, calculator, or sitemap." pathname="/404" siteUrl={settings.siteUrl}>
+  <section class="section">
+    <div class="section-inner">
+      <p class="eyebrow">404</p>
+      <h1>We could not find that page.</h1>
+      <p class="lead">Continue through the main buyer paths below.</p>
+      <div class="grid">
+        <article class="card"><h3>Products</h3><p>Browse fiber laser cutting machines and compare specs.</p><a class="button" href="/products">Open products</a></article>
+        <article class="card"><h3>RFQ</h3><p>Send material, thickness, country, and production requirements.</p><a class="button" href="/request-quote">Request quote</a></article>
+        <article class="card"><h3>Sitemap</h3><p>Find every demo page in the complete B2B site map.</p><a class="button" href="/html-sitemap">Open sitemap</a></article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

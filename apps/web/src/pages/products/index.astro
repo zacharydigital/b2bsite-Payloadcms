@@ -1,0 +1,44 @@
+---
+import "../../components/react/interactive.css";
+import RfqPanel from "../../components/RfqPanel.astro";
+import ProductListing from "../../components/react/ProductListing";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../../lib/content";
+
+const settings = await getSiteSettings();
+const products = await getProducts();
+const listingProducts = products.map((product) => ({
+  slug: product.slug,
+  model: product.model,
+  title: product.title,
+  series: product.series,
+  shortDescription: product.shortDescription,
+  heroImage: product.heroImage,
+  powerKw: product.powerKw,
+  repeatPositioningAccuracy: product.repeatPositioningAccuracy,
+  complianceStandards: product.complianceStandards,
+  recommendedFor: product.recommendedFor,
+  materialCapabilities: product.materialCapabilities
+}));
+---
+
+<BaseLayout title={`Fiber Laser Cutting Machines | ${settings.brandName}`} description="Browse TitanLaser fiber laser cutting machine categories, compare power ranges, filter by material thickness, and move selected systems into an RFQ workflow." pathname="/products" siteUrl={settings.siteUrl}>
+  <section class="hero" style={`--hero-image: url('${products[1]?.heroImage || products[0]?.heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">PLP / category page</p>
+      <h1>Fiber laser cutting machines for export buyers</h1>
+      <p class="lead">Filter by power, material capability, precision, compliance, and application before opening a product detail page or requesting a consolidated quote.</p>
+      <a class="button" href="/quote-cart">Build quote cart</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <ProductListing client:load products={listingProducts} />
+    </div>
+  </section>
+
+  <section class="section band">
+    <RfqPanel title="Need a model shortlist?" body="Send material type, thickness, monthly production, target market, and site constraints. TitanLaser will recommend a power range and option package." />
+  </section>
+</BaseLayout>

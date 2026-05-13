@@ -1,0 +1,35 @@
+---
+import "../components/react/interactive.css";
+import ContactCrmForm from "../components/react/ContactCrmForm";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSiteSettings } from "../lib/content";
+
+const settings = await getSiteSettings();
+---
+
+<BaseLayout title={`Contact TitanLaser | ${settings.brandName}`} description="Contact TitanLaser export sales, application engineering, service, distributor, and compliance teams through a CRM-style interactive form." pathname="/contact" siteUrl={settings.siteUrl}>
+  <section class="hero" style="--hero-image: url('https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1800&q=82')">
+    <div class="hero-content">
+      <p class="eyebrow">Contact and CRM routing</p>
+      <h1>Talk to TitanLaser sales and engineering</h1>
+      <p class="lead">Route your inquiry by topic, market, preferred communication channel, and project context. Submissions create a local CRM-style demo record.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <ContactCrmForm client:load />
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Global contact map</h2>
+      <div class="grid">
+        <article class="card"><h3>Asia-Pacific</h3><p>Vietnam, Thailand, Malaysia, Indonesia, Philippines, and India inquiries route to export sales plus application engineering.</p></article>
+        <article class="card"><h3>Europe</h3><p>EU buyers receive CE documentation, GDPR-aware contact handling, and engineering review for voltage and safety requirements.</p></article>
+        <article class="card"><h3>Middle East and Africa</h3><p>Distributor, installation, spare-part, and remote commissioning requests are routed by country and service availability.</p></article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

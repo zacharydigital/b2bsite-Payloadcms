@@ -1,0 +1,34 @@
+{
+  "name": "@titanlaser/cms",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm generate:importmap && next dev -p 3001",
+    "build": "pnpm generate:importmap && next build",
+    "generate:importmap": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload generate:importmap",
+    "start": "next start -p 3001",
+    "seed": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts tsx src/seed.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@payloadcms/db-sqlite": "^3.0.0",
+    "@payloadcms/next": "^3.0.0",
+    "@payloadcms/payload-cloud": "^3.0.0",
+    "@payloadcms/richtext-lexical": "^3.0.0",
+    "@titanlaser/content": "workspace:*",
+    "cross-env": "^7.0.3",
+    "next": "15.4.11",
+    "payload": "^3.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sharp": "^0.34.0",
+    "tsx": "^4.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.9.3"
+  }
+}

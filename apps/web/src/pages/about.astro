@@ -1,0 +1,97 @@
+---
+import InternalLinkGraph from "../components/InternalLinkGraph.astro";
+import TrustProofPanel from "../components/TrustProofPanel.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCaseStudies, getContentPages, getExperts, getProducts, getSiteSettings } from "../lib/content";
+import { organizationSchema, personSchema } from "../lib/schema";
+
+const [settings, products, cases, experts, pages] = await Promise.all([
+  getSiteSettings(),
+  getProducts(),
+  getCaseStudies(),
+  getExperts(),
+  getContentPages()
+]);
+
+const heroImage = "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1400&q=80";
+---
+
+<BaseLayout
+  title="About TitanLaser | Factory, Team, Certifications, and Proof"
+  description="Verify TitanLaser as a B2B fiber laser cutting machine supplier through factory capability, engineering team, certifications, case evidence, and expert profiles."
+  pathname="/about"
+  siteUrl={settings.siteUrl}
+  jsonLdData={[organizationSchema(settings), ...experts.map((expert) => personSchema(expert, settings))]}
+>
+  <section class="hero" style={`--hero-image: url('${heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">Trust and proof layer</p>
+      <h1>About TitanLaser</h1>
+      <p class="lead">A structured supplier profile for buyers and AI engines: factory capability, engineering authorship, certifications, case evidence, and product expertise in one connected trust layer.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Factory capability signals</h2>
+      <p class="lead">The About page is not a generic brand story. It is the identity node that connects Organization Schema, technical authority, manufacturing proof, and commercial confidence.</p>
+      <div class="metric-row">
+        <div class="metric"><strong>30 kW</strong><span>validated high-power fiber laser line</span></div>
+        <div class="metric"><strong>CE</strong><span>export compliance baseline</span></div>
+        <div class="metric"><strong>80+</strong><span>overseas commissioning projects represented by the engineering profile</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Engineering team and author profiles</h2>
+      <div class="grid">
+        {experts.map((expert) => (
+          <article class="card">
+            <img src={expert.avatar} alt={expert.name} loading="lazy" />
+            <h3>{expert.name}</h3>
+            <p><strong>{expert.role}</strong></p>
+            <p>{expert.bio}</p>
+            <ul class="proof-strip">
+              {expert.credentials.slice(0, 3).map((credential) => <li>{credential}</li>)}
+            </ul>
+            <a class="button secondary" href={`/experts/${expert.slug}`}>View full expert profile</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Certifications and supplier verification</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Compliance standards</h3>
+          <p>Product pages expose certification values as structured fields, including CE, ISO 9001, RoHS, and IEC 60825-1 where applicable.</p>
+        </article>
+        <article class="card">
+          <h3>Field evidence</h3>
+          <p>Case studies store customer industry, country, selected model, measured result, timestamped media, and expert owner as reusable proof blocks.</p>
+        </article>
+        <article class="card">
+          <h3>Commercial readiness</h3>
+          <p>Buyers can move from knowledge pages to calculator, PDP, case proof, and supplier verification without leaving the semantic graph.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Connected proof graph</h2>
+      <p class="lead">This page links the supplier identity layer back to the commercial and knowledge layers so crawlers can verify who is behind the answers.</p>
+      <InternalLinkGraph products={products} topics={pages.slice(0, 4)} cases={cases} experts={experts} />
+    </div>
+  </section>
+
+  <section class="section">
+    <TrustProofPanel expert={experts[0]} />
+  </section>
+</BaseLayout>

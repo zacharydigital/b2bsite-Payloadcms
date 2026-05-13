@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getContentPages, getProducts, getSiteSettings } from "../lib/content";
+import { catalogPages } from "../lib/pageCatalog";
+
+const settings = await getSiteSettings();
+const products = await getProducts();
+const contentPages = await getContentPages();
+const searchItems = [
+  ...products.map((product) => ({ title: product.model, href: `/products/${product.slug}`, type: "Product", description: product.shortDescription })),
+  ...contentPages.map((page) => ({
+    title: page.title,
+    href: page.type === "pillar" ? `/guides/${page.slug}` : page.type === "glossary" ? `/glossary/${page.slug}` : `/topics/${page.slug}`,
+    type: page.type,
+    description: page.heroAnswer
+  })),
+  ...catalogPages.slice(0, 40).map((page) => ({ title: page.title, href: page.path, type: page.group, description: page.description }))
+];
+---
+
+<BaseLayout title={`Search TitanLaser | ${settings.brandName}`} description="Search products, guides, specifications, cases, and B2B inquiry pages in the TitanLaser demo site." pathname="/search" siteUrl={settings.siteUrl}>
+  <section class="section">
+    <div class="section-inner">
+      <p class="eyebrow">Search experience</p>
+      <h1>Search TitanLaser</h1>
+      <p class="lead">A static demo search page showing how large B2B catalogs should expose product, technical, content, and conversion assets from one interface.</p>
+      <form class="search-box" action="/search-results">
+        <input name="q" placeholder="Search 30 kW, carbon steel, CE, shipping, ROI..." />
+        <button class="button" type="submit">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Suggested results</h2>
+      <div class="grid">
+        {searchItems.map((item) => (
+          <article class="card">
+            <p class="eyebrow">{item.type}</p>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <a class="button secondary" href={item.href}>Open</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .search-box {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    max-width: 760px;
+    margin-top: 22px;
+  }
+
+  .search-box input {
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font: inherit;
+  }
+
+  @media (max-width: 640px) {
+    .search-box {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import "../components/react/interactive.css";
+import QuoteCart from "../components/react/QuoteCart";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../lib/content";
+
+const [settings, products] = await Promise.all([getSiteSettings(), getProducts()]);
+const cartProducts = products.map((product) => ({
+  slug: product.slug,
+  model: product.model,
+  title: product.title,
+  powerKw: product.powerKw
+}));
+---
+
+<BaseLayout title={`Quote Cart | ${settings.brandName}`} description="Build a multi-model RFQ cart, add TitanLaser machines, and create a demo CRM quote record." pathname="/quote-cart" siteUrl={settings.siteUrl}>
+  <section class="hero" style={`--hero-image: url('${products[1]?.heroImage || products[0]?.heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">Interactive RFQ cart</p>
+      <h1>Build one RFQ for multiple machines</h1>
+      <p class="lead">Add models from PDPs or this page, adjust quantities, enter buyer context, and create a local CRM-style RFQ record for demo purposes.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <QuoteCart client:load products={cartProducts} />
+    </div>
+  </section>
+</BaseLayout>

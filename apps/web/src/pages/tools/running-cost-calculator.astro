@@ -1,0 +1,33 @@
+---
+import "../../components/react/calculator.css";
+import RunningCostCalculator from "../../components/react/RunningCostCalculator";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../../lib/content";
+import { websiteSchema } from "../../lib/schema";
+
+const [settings, products] = await Promise.all([getSiteSettings(), getProducts()]);
+const calculatorProducts = products.map((product) => ({
+  slug: product.slug,
+  model: product.model,
+  title: product.title,
+  powerKw: product.powerKw,
+  materialCapabilities: product.materialCapabilities
+}));
+---
+
+<BaseLayout
+  title="Fiber Laser Running Cost Calculator | TitanLaser"
+  description="Estimate cutting cost per meter by material, thickness, power, gas, electricity, labor, and utilization."
+  pathname="/tools/running-cost-calculator"
+  siteUrl={settings.siteUrl}
+  jsonLdData={websiteSchema(settings)}
+>
+  <section class="section">
+    <div class="section-inner">
+      <p class="eyebrow">Interactive component system</p>
+      <h1>Running Cost Calculator</h1>
+      <p class="lead">This Astro Island uses the same product capability fields as PDP tables and JSON-LD properties.</p>
+      <RunningCostCalculator client:load products={calculatorProducts} />
+    </div>
+  </section>
+</BaseLayout>

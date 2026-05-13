@@ -1,0 +1,14 @@
+{
+  "name": "titanlaser-content-system",
+  "private": true,
+  "packageManager": "pnpm@10.21.0",
+  "scripts": {
+    "dev": "concurrently -n cms,web -c blue,green \"pnpm --filter @titanlaser/cms dev\" \"pnpm --filter @titanlaser/web dev\"",
+    "build": "pnpm --filter @titanlaser/content build && pnpm --filter @titanlaser/cms build && pnpm --filter @titanlaser/web build",
+    "seed": "pnpm --filter @titanlaser/cms seed",
+    "typecheck": "pnpm --filter @titanlaser/content typecheck && pnpm --filter @titanlaser/cms typecheck && pnpm --filter @titanlaser/web typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

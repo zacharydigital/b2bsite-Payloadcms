@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getSiteSettings } from "../../lib/content";
+import { catalogPages } from "../../lib/pageCatalog";
+import { getLocale, localeMeta, locales, localizedAlternates, localizedExtraPages, localizedPath, localizedTitle, uiCopy, type Locale } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const locale = getLocale(Astro.params.locale) as Locale;
+const settings = await getSiteSettings();
+const copy = uiCopy[locale];
+const localizedPages = [...localizedExtraPages, ...catalogPages];
+const featured = ["/products", "/quote-cart", "/product-selector", "/download-center", "/contact", "/privacy-policy", "/hreflang-hub"]
+  .map((path) => localizedPages.find((page) => page.path === path))
+  .filter(Boolean);
+---
+
+<BaseLayout
+  title={`${copy.homeTitle} | ${settings.brandName}`}
+  description={copy.homeDescription}
+  pathname={`/${locale}`}
+  siteUrl={settings.siteUrl}
+  htmlLang={localeMeta[locale].htmlLang}
+  alternates={localizedAlternates("/", settings.siteUrl)}
+>
+  <section class="hero" style="--hero-image: url('https://images.unsplash.com/photo-1581091215367-59ab6b87a64c?auto=format&fit=crop&w=1800&q=82')">
+    <div class="hero-content">
+      <p class="eyebrow">{copy.globalDemo}</p>
+      <h1>{copy.homeTitle}</h1>
+      <p class="lead">{copy.homeLead}</p>
+      <div class="intent-actions">
+        {locales.map((item) => <a class={item === locale ? "button" : "button secondary"} href={`/${item}`}>{localeMeta[item].nativeName}</a>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>{copy.languageHub}</h2>
+      <p class="lead">{localeMeta[locale].marketNote}</p>
+      <div class="grid">
+        {featured.map((page) => page && (
+          <article class="card">
+            <p class="eyebrow">{page.kicker}</p>
+            <h3>{localizedTitle(page.title, locale)}</h3>
+            <p>{page.description}</p>
+            <a class="button secondary" href={localizedPath(page.path, locale)}>{copy.openPage}</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

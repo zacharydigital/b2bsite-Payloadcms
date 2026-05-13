@@ -1,0 +1,61 @@
+---
+import ComparisonTable from "../../components/ComparisonTable.astro";
+import IntentLoopCta from "../../components/IntentLoopCta.astro";
+import RfqPanel from "../../components/RfqPanel.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../../lib/content";
+import { websiteSchema } from "../../lib/schema";
+
+const [settings, products] = await Promise.all([getSiteSettings(), getProducts()]);
+const comparisonProducts = products.filter((product) => ["tl-fc3015-12kw", "tl-gigacut-30kw"].includes(product.slug));
+---
+
+<BaseLayout
+  title="12 kW vs 30 kW Fiber Laser Cutting Machine Comparison | TitanLaser"
+  description="Compare 12 kW and 30 kW fiber laser cutting machines by material thickness, application fit, gas strategy, compliance, and buying intent."
+  pathname="/compare/12kw-vs-30kw-fiber-laser"
+  siteUrl={settings.siteUrl}
+  jsonLdData={websiteSchema(settings)}
+>
+  <section class="section">
+    <div class="section-inner">
+      <p class="eyebrow">Commercial-intent comparison</p>
+      <h1>12 kW vs 30 kW Fiber Laser Cutting Machine</h1>
+      <p class="lead">Use this page when the buyer has moved beyond general education and needs a machine shortlist. It connects product specs, running cost logic, and RFQ preparation.</p>
+      <ComparisonTable products={comparisonProducts} />
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Decision shortcuts</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Choose 12 kW when</h3>
+          <p>Your primary work is mid-thickness sheet metal, equipment budget matters, and the material mix does not require frequent thick plate flexibility.</p>
+          <a class="button secondary" href="/products/tl-fc3015-12kw">Open 12 kW PDP</a>
+        </article>
+        <article class="card">
+          <h3>Choose 30 kW when</h3>
+          <p>You need thick carbon steel capacity, high utilization, service-center flexibility, and a stronger future-proofing margin.</p>
+          <a class="button secondary" href="/products/tl-gigacut-30kw">Open 30 kW PDP</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <IntentLoopCta
+      title="Validate the comparison with operating cost"
+      body="A power comparison is incomplete without local electricity, gas, labor, and utilization assumptions."
+      primaryHref="/tools/running-cost-calculator"
+      primaryLabel="Run calculator"
+      secondaryHref="/request-quote"
+      secondaryLabel="Prepare RFQ"
+    />
+  </section>
+
+  <section class="section band">
+    <RfqPanel title="Ask TitanLaser to validate your shortlist" body="Send your material mix and current bottleneck. The engineering team can recommend whether a 12 kW or 30 kW path is more defensible." />
+  </section>
+</BaseLayout>

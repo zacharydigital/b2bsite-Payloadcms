@@ -1,0 +1,22 @@
+---
+const {
+  title = "Turn technical research into a machine shortlist",
+  body = "Use the calculator to estimate operating cost, then move into the matched product detail page with specifications, case proof, and expert context.",
+  primaryHref = "/tools/running-cost-calculator",
+  primaryLabel = "Run cost calculator",
+  secondaryHref = "/about",
+  secondaryLabel = "Verify TitanLaser"
+} = Astro.props;
+---
+
+<section class="intent-loop">
+  <div>
+    <p class="eyebrow">Intent funnel loop</p>
+    <h2>{title}</h2>
+    <p>{body}</p>
+  </div>
+  <div class="intent-actions">
+    <a class="button" href={primaryHref}>{primaryLabel}</a>
+    <a class="button secondary" href={secondaryHref}>{secondaryLabel}</a>
+  </div>
+</section>

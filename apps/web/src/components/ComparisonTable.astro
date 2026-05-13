@@ -1,0 +1,33 @@
+---
+import type { Product } from "../lib/content";
+
+const { products } = Astro.props as { products: Product[] };
+const rows = [
+  { label: "Power", value: (product: Product) => `${product.powerKw} kW` },
+  { label: "Best fit", value: (product: Product) => product.recommendedFor.join(", ") },
+  { label: "Carbon steel max", value: (product: Product) => `${product.materialCapabilities.find((item) => item.material === "Carbon steel")?.maxThicknessMm || "-"} mm` },
+  { label: "Stainless steel max", value: (product: Product) => `${product.materialCapabilities.find((item) => item.material === "Stainless steel")?.maxThicknessMm || "-"} mm` },
+  { label: "Assist gases", value: (product: Product) => product.assistGasTypes.join(", ") },
+  { label: "Compliance", value: (product: Product) => product.complianceStandards.join(", ") },
+  { label: "Primary buying signal", value: (product: Product) => product.powerKw >= 30 ? "Thick plate flexibility and high utilization" : "Balanced cost and mid-thickness productivity" }
+];
+---
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Decision factor</th>
+        {products.map((product) => <th>{product.model}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <td><strong>{row.label}</strong></td>
+          {products.map((product) => <td>{row.value(product)}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

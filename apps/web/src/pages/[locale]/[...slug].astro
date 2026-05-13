@@ -1,0 +1,141 @@
+---
+import RfqPanel from "../../components/RfqPanel.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../../lib/content";
+import { getLocale, localeMeta, locales, localizedAlternates, localizedDescription, localizedExtraPages, localizedPath, localizedTitle, uiCopy, type Locale } from "../../lib/i18n";
+import { catalogPages, type CatalogPage } from "../../lib/pageCatalog";
+
+export function getStaticPaths() {
+  const pages = [...localizedExtraPages, ...catalogPages];
+  return locales.flatMap((locale) =>
+    pages.map((page) => ({
+      params: { locale, slug: page.path.replace(/^\//, "") },
+      props: { page }
+    }))
+  );
+}
+
+const locale = getLocale(Astro.params.locale) as Locale;
+const { page } = Astro.props as { page: CatalogPage };
+const settings = await getSiteSettings();
+const products = await getProducts();
+const copy = uiCopy[locale];
+const localizedPages = [...localizedExtraPages, ...catalogPages];
+const title = localizedTitle(page.title, locale);
+const description = localizedDescription(page, locale);
+const relatedPages = localizedPages.filter((item) => item.group === page.group && item.path !== page.path).slice(0, 4);
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: title,
+  description,
+  inLanguage: localeMeta[locale].htmlLang,
+  url: new URL(localizedPath(page.path, locale), settings.siteUrl).toString()
+};
+---
+
+<BaseLayout
+  title={`${title} | ${settings.brandName}`}
+  description={description}
+  pathname={localizedPath(page.path, locale)}
+  siteUrl={settings.siteUrl}
+  htmlLang={localeMeta[locale].htmlLang}
+  alternates={localizedAlternates(page.path, settings.siteUrl)}
+  jsonLdData={schema}
+>
+  <section class="hero" style={`--hero-image: url('${page.image}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">{copy.localizedVersion}</p>
+      <h1>{title}</h1>
+      <p class="lead">{description}</p>
+      <div class="intent-actions">
+        <a class="button" href={localizedPath("/quote-cart", locale)}>{page.primaryCta.label}</a>
+        <a class="button secondary" href={localizedPath("/contact", locale)}>Contact</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner two-column">
+      <div>
+        <p class="eyebrow">{localeMeta[locale].nativeName}</p>
+        <h2>{copy.buyerIntent}</h2>
+        <p class="lead">{localeMeta[locale].marketNote}</p>
+      </div>
+      <article class="card">
+        <h3>{page.group}</h3>
+        <ul class="proof-strip">
+          {page.highlights.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>{copy.modules}</h2>
+      <div class="grid">
+        {page.sections.map((section) => (
+          <article class="card">
+            <h3>{section.heading}</h3>
+            <p>{section.body}</p>
+            <ul>{section.items.map((item) => <li>{item}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>{copy.products}</h2>
+      <div class="grid">
+        {products.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <ul class="proof-strip">
+              <li>{product.powerKw} kW</li>
+              <li>{product.repeatPositioningAccuracy}</li>
+            </ul>
+            <a class="button secondary" href={`/products/${product.slug}`}>{copy.openPage}</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>{copy.related}</h2>
+      <div class="grid">
+        {relatedPages.map((item) => (
+          <article class="card">
+            <p class="eyebrow">{item.kicker}</p>
+            <h3>{localizedTitle(item.title, locale)}</h3>
+            <p>{localizedDescription(item, locale)}</p>
+            <a class="button secondary" href={localizedPath(item.path, locale)}>{copy.openPage}</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <RfqPanel title={copy.rfqTitle} body={copy.rfqBody} />
+  </section>
+</BaseLayout>
+
+<style>
+  .two-column {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    gap: 24px;
+  }
+
+  @media (max-width: 760px) {
+    .two-column {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

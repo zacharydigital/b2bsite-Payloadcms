@@ -1,0 +1,91 @@
+---
+import FaqList from "../../components/FaqList.astro";
+import IntentLoopCta from "../../components/IntentLoopCta.astro";
+import SiloLinkMatrix from "../../components/SiloLinkMatrix.astro";
+import TrustProofPanel from "../../components/TrustProofPanel.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCaseStudies, getContentPage, getContentPages, getProducts, getSiteSettings } from "../../lib/content";
+import { articleSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const pages = await getContentPages("pillar");
+  return pages.map((page) => ({ params: { slug: page.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, page, products, cases] = await Promise.all([getSiteSettings(), getContentPage(slug!), getProducts(), getCaseStudies()]);
+
+if (!page) {
+  return Astro.redirect("/");
+}
+---
+
+<BaseLayout
+  title={page.title}
+  description={page.seoSummary}
+  pathname={`/guides/${page.slug}`}
+  siteUrl={settings.siteUrl}
+  jsonLdData={articleSchema(page, settings)}
+>
+  <section class="section">
+    <div class="section-inner content-body">
+      <p class="eyebrow">Pillar page</p>
+      <h1>{page.title}</h1>
+      <p class="lead">{page.heroAnswer}</p>
+      {page.bodyBlocks.map((block) => (
+        <section>
+          <h2>{block.heading}</h2>
+          <p>{block.content}</p>
+        </section>
+      ))}
+    </div>
+  </section>
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Cluster content matrix</h2>
+      <p class="lead">These subtopic pages form the silo around this 3000+ word pillar guide and pass authority back into the main entity topic.</p>
+      <div class="grid">
+        {page.relatedTopics.map((topic) => (
+          <article class="card">
+            <h3>{topic.title}</h3>
+            <p>{topic.heroAnswer}</p>
+            <a class="button secondary" href={`/topics/${topic.slug}`}>Open cluster</a>
+          </article>
+        ))}
+        {page.relatedProducts.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <a class="button secondary" href={`/products/${product.slug}`}>Open product</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <h2>Internal silo link structure</h2>
+      <p class="lead">Three-stage anchor text keeps topical relevance, commercial intent, and trust proof inside the same crawlable network.</p>
+      <SiloLinkMatrix pillar={page} clusters={page.relatedTopics} products={products} cases={cases} />
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <h2>FAQ module</h2>
+      <FaqList faqs={page.faqs} />
+    </div>
+  </section>
+  <section class="section band">
+    <TrustProofPanel expert={page.expert} />
+  </section>
+  <section class="section band">
+    <IntentLoopCta
+      title="Move from guide reading to product selection"
+      body="After the pillar guide answers the technical question, the next step is to calculate running cost and compare matched machine models."
+      primaryHref="/tools/running-cost-calculator"
+      primaryLabel="Open calculator"
+      secondaryHref="/compare/12kw-vs-30kw-fiber-laser"
+      secondaryLabel="Compare models"
+    />
+  </section>
+</BaseLayout>

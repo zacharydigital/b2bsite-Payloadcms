@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSiteSettings } from "../lib/content";
+
+const settings = await getSiteSettings();
+---
+
+<BaseLayout title={`Temporary Issue | ${settings.brandName}`} description="TitanLaser fallback page for temporary server errors." pathname="/500" siteUrl={settings.siteUrl}>
+  <section class="section">
+    <div class="section-inner">
+      <p class="eyebrow">500</p>
+      <h1>Temporary issue.</h1>
+      <p class="lead">The demo fallback keeps core buyer actions available even during an error state.</p>
+      <div class="grid">
+        <article class="card"><h3>Email sales</h3><p>Use the RFQ form to prepare a project email with material, thickness, and market details.</p><a class="button" href="/request-quote">Prepare RFQ</a></article>
+        <article class="card"><h3>Calculate cost</h3><p>Estimate cost per meter and identify likely model fit.</p><a class="button" href="/tools/running-cost-calculator">Open calculator</a></article>
+        <article class="card"><h3>Contact support</h3><p>Route urgent buyer and distributor requests to TitanLaser support.</p><a class="button" href="/contact">Contact us</a></article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

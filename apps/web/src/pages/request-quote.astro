@@ -1,0 +1,43 @@
+---
+import RfqPanel from "../components/RfqPanel.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../lib/content";
+import { organizationSchema } from "../lib/schema";
+
+const [settings, products] = await Promise.all([getSiteSettings(), getProducts()]);
+---
+
+<BaseLayout
+  title="Request a Fiber Laser Cutting Machine Quote | TitanLaser"
+  description="Prepare a B2B RFQ for TitanLaser with material, thickness, tonnage, gas, power, and edge-quality requirements."
+  pathname="/request-quote"
+  siteUrl={settings.siteUrl}
+  jsonLdData={organizationSchema(settings)}
+>
+  <section class="section">
+    <div class="section-inner">
+      <p class="eyebrow">RFQ endpoint</p>
+      <h1>Request a quote with engineering context</h1>
+      <p class="lead">The highest-quality B2B inquiries include the production variables that affect model selection, cost per meter, and commissioning readiness.</p>
+    </div>
+  </section>
+
+  <section class="section band">
+    <RfqPanel />
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Attach the right product context</h2>
+      <div class="grid">
+        {products.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <a class="button secondary" href={`/products/${product.slug}`}>Review specs first</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

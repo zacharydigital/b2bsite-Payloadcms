@@ -1,0 +1,74 @@
+---
+import "../components/react/interactive.css";
+import DownloadCenter from "../components/react/DownloadCenter";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSiteSettings } from "../lib/content";
+
+const settings = await getSiteSettings();
+const downloads = [
+  {
+    id: "tl-gigacut-30kw-datasheet",
+    title: "TL-GigaCut-30KW Datasheet",
+    category: "Datasheet",
+    format: "PDF",
+    market: "Global",
+    description: "Power, working area, cutting thickness, gas assumptions, machine footprint, and option package summary."
+  },
+  {
+    id: "tl-fc3015-12kw-datasheet",
+    title: "TL-FC3015-12KW Datasheet",
+    category: "Datasheet",
+    format: "PDF",
+    market: "Global",
+    description: "Compact machine datasheet for general fabrication shops and mid-thickness production."
+  },
+  {
+    id: "foundation-layout-cad",
+    title: "Foundation and Layout CAD Pack",
+    category: "CAD / 3D",
+    format: "DWG + STEP",
+    market: "Global",
+    description: "Installation footprint, machine access zone, loading direction, and utility routing references."
+  },
+  {
+    id: "ce-export-pack",
+    title: "CE Export Documentation Pack",
+    category: "Certification",
+    format: "PDF",
+    market: "Europe",
+    description: "CE declaration template, safety notes, electrical documentation checklist, and importer review notes."
+  },
+  {
+    id: "sea-installation-checklist",
+    title: "Southeast Asia Installation Checklist",
+    category: "Installation",
+    format: "PDF",
+    market: "Southeast Asia",
+    description: "Voltage, gas sourcing, temperature, floor condition, shipping, and operator preparation checklist."
+  },
+  {
+    id: "spare-parts-list",
+    title: "Recommended Spare Parts List",
+    category: "Service",
+    format: "XLSX",
+    market: "Global",
+    description: "Protective lenses, nozzles, ceramic rings, filters, belts, sensors, and maintenance stock quantities."
+  }
+];
+---
+
+<BaseLayout title={`Download Center | ${settings.brandName}`} description="Filter and unlock TitanLaser datasheets, CAD files, certification packs, installation documents, and service files." pathname="/download-center" siteUrl={settings.siteUrl}>
+  <section class="hero" style="--hero-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1800&q=82')">
+    <div class="hero-content">
+      <p class="eyebrow">Interactive download center</p>
+      <h1>Technical files for RFQ and engineering review</h1>
+      <p class="lead">Filter documents by category and market, unlock downloads with a work email, and record demo download events in local CRM storage.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <DownloadCenter client:load downloads={downloads} />
+    </div>
+  </section>
+</BaseLayout>

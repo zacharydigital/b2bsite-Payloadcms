@@ -1,0 +1,44 @@
+---
+type ProductLink = { slug: string; model?: string; title: string };
+type TopicLink = { slug: string; type: string; title: string };
+type CaseLink = { slug: string; title: string };
+type ExpertLink = { slug: string; name: string };
+
+const {
+  products = [],
+  topics = [],
+  cases = [],
+  experts = []
+} = Astro.props as {
+  products?: ProductLink[];
+  topics?: TopicLink[];
+  cases?: CaseLink[];
+  experts?: ExpertLink[];
+};
+---
+
+<div class="link-graph">
+  <div class="link-node">
+    <p class="eyebrow">Money pages</p>
+    <h3>Core product entities</h3>
+    <ul>
+      {products.map((product) => <li><a href={`/products/${product.slug}`}>{product.model || product.title}</a></li>)}
+    </ul>
+  </div>
+  <div class="link-node">
+    <p class="eyebrow">Knowledge support</p>
+    <h3>Guides and clusters</h3>
+    <ul>
+      {topics.map((topic) => <li><a href={topic.type === "pillar" ? `/guides/${topic.slug}` : `/topics/${topic.slug}`}>{topic.title}</a></li>)}
+    </ul>
+  </div>
+  <div class="link-node">
+    <p class="eyebrow">Proof layer</p>
+    <h3>Cases and experts</h3>
+    <ul>
+      {cases.map((caseStudy) => <li><a href={`/case-studies/${caseStudy.slug}`}>{caseStudy.title}</a></li>)}
+      {experts.map((expert) => <li><a href={`/experts/${expert.slug}`}>{expert.name}</a></li>)}
+      <li><a href="/about">About and team verification</a></li>
+    </ul>
+  </div>
+</div>

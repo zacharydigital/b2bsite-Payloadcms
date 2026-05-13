@@ -1,0 +1,37 @@
+---
+const { pillar, clusters = [], products = [], cases = [] } = Astro.props as {
+  pillar?: { slug: string; title: string };
+  clusters?: Array<{ slug: string; title: string; heroAnswer?: string }>;
+  products?: Array<{ slug: string; model: string; title: string }>;
+  cases?: Array<{ slug: string; title: string }>;
+};
+---
+
+<div class="silo-matrix">
+  <article class="silo-column">
+    <p class="eyebrow">Anchor stage 1</p>
+    <h3>Exact-topic anchors</h3>
+    <p>Use the primary topic phrase to pass relevance back to the pillar page.</p>
+    <ul>
+      {pillar && <li><a href={`/guides/${pillar.slug}`}>{pillar.title}</a></li>}
+      {clusters.slice(0, 2).map((cluster) => <li><a href={`/topics/${cluster.slug}`}>{cluster.title}</a></li>)}
+    </ul>
+  </article>
+  <article class="silo-column">
+    <p class="eyebrow">Anchor stage 2</p>
+    <h3>Commercial-intent anchors</h3>
+    <p>Move evaluation traffic from knowledge pages into machine model pages.</p>
+    <ul>
+      {products.map((product) => <li><a href={`/products/${product.slug}`}>{product.model} specification page</a></li>)}
+    </ul>
+  </article>
+  <article class="silo-column">
+    <p class="eyebrow">Anchor stage 3</p>
+    <h3>Proof and trust anchors</h3>
+    <p>Link decisions to evidence: case data, expert authorship, and supplier verification.</p>
+    <ul>
+      {cases.map((caseStudy) => <li><a href={`/case-studies/${caseStudy.slug}`}>{caseStudy.title}</a></li>)}
+      <li><a href="/about">TitanLaser factory and team verification</a></li>
+    </ul>
+  </article>
+</div>

@@ -1,0 +1,494 @@
+---
+import { canonical, jsonLd } from "../lib/seo";
+
+type Props = {
+  title: string;
+  description: string;
+  pathname: string;
+  siteUrl: string;
+  jsonLdData?: unknown | unknown[];
+  htmlLang?: string;
+  alternates?: Array<{ lang: string; href: string }>;
+};
+
+const { title, description, pathname, siteUrl, jsonLdData, htmlLang = "en", alternates = [] } = Astro.props;
+const canonicalUrl = canonical(siteUrl, pathname);
+const scripts = Array.isArray(jsonLdData) ? jsonLdData : jsonLdData ? [jsonLdData] : [];
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={alternate.href} />)}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    {scripts.map((script) => <script is:inline type="application/ld+json" set:html={jsonLd(script)} />)}
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-mark">TL</span>
+        <span>TitanLaser</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="/products">Products</a>
+        <a href="/guides/ultimate-guide-fiber-laser-cutting-metal-fabrication">Guide</a>
+        <a href="/solutions/shipbuilding-heavy-plate-laser-cutting">Solutions</a>
+        <a href="/products/tl-gigacut-30kw">30 kW System</a>
+        <a href="/compare/12kw-vs-30kw-fiber-laser">Compare</a>
+        <a href="/case-studies/vietnam-shipyard-30mm-carbon-steel">Case</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/request-quote">RFQ</a>
+        <a href="/tools/running-cost-calculator">Calculator</a>
+        <a href="/html-sitemap">Sitemap</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>TitanLaser content system MVP: structured specs, semantic pages, proof modules, and interactive tools from one data backbone.</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: light;
+    --ink: #15191e;
+    --muted: #5b6673;
+    --line: #d8dee7;
+    --panel: #f6f8fb;
+    --steel: #23384d;
+    --blue: #005fcc;
+    --cyan: #00a6c8;
+    --green: #16825d;
+    --amber: #b66b00;
+    --white: #ffffff;
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--white);
+  }
+
+  a {
+    color: inherit;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 14px clamp(18px, 4vw, 56px);
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    color: white;
+    background: var(--steel);
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 14px;
+    font-size: 14px;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--blue);
+  }
+
+  .site-footer {
+    padding: 28px clamp(18px, 4vw, 56px);
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  .section {
+    padding: clamp(42px, 7vw, 88px) clamp(18px, 4vw, 56px);
+  }
+
+  .section-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    min-height: 560px;
+    display: grid;
+    align-items: end;
+    padding: clamp(48px, 8vw, 96px) clamp(18px, 4vw, 56px);
+    color: white;
+    background:
+      linear-gradient(90deg, rgba(10, 16, 24, 0.88), rgba(10, 16, 24, 0.42), rgba(10, 16, 24, 0.18)),
+      var(--hero-image);
+    background-position: center;
+    background-size: cover;
+  }
+
+  .hero-content {
+    max-width: 820px;
+  }
+
+  .eyebrow {
+    margin: 0 0 12px;
+    color: var(--cyan);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    overflow-wrap: anywhere;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  h2 {
+    margin: 0 0 18px;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+
+  p {
+    line-height: 1.66;
+  }
+
+  .lead {
+    max-width: 720px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  .hero .lead {
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    min-width: 0;
+    padding: 22px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .band {
+    background: var(--panel);
+  }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .metric {
+    padding: 18px;
+    border-left: 4px solid var(--blue);
+    background: white;
+  }
+
+  .metric strong {
+    display: block;
+    font-size: 28px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    background: white;
+  }
+
+  th,
+  td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  th {
+    background: #edf2f7;
+    color: #263543;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 16px;
+    color: white;
+    background: var(--blue);
+    border-radius: 6px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .button.secondary {
+    color: var(--steel);
+    background: white;
+    border: 1px solid var(--line);
+  }
+
+  .content-body {
+    display: grid;
+    gap: 28px;
+    max-width: 860px;
+  }
+
+  .proof-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .proof-strip li {
+    padding: 8px 12px;
+    background: #eaf7f3;
+    border: 1px solid #b9e3d5;
+    border-radius: 6px;
+    color: #0e6247;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .intent-loop {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: center;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px;
+    color: white;
+    background: var(--steel);
+    border-radius: 8px;
+  }
+
+  .intent-loop h2 {
+    margin-bottom: 8px;
+    font-size: clamp(26px, 4vw, 40px);
+  }
+
+  .intent-loop p {
+    max-width: 760px;
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  .intent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .link-graph {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 18px;
+  }
+
+  .link-node {
+    padding: 22px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .link-node ul {
+    display: grid;
+    gap: 10px;
+    padding-left: 18px;
+    line-height: 1.45;
+  }
+
+  .link-node a {
+    color: var(--blue);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .silo-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 18px;
+  }
+
+  .silo-column {
+    padding: 22px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .silo-column ul {
+    display: grid;
+    gap: 10px;
+    padding-left: 18px;
+    line-height: 1.45;
+  }
+
+  .silo-column a {
+    color: var(--blue);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .trust-panel {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .trust-panel.compact {
+    display: grid;
+    gap: 20px;
+  }
+
+  .rfq-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 430px);
+    gap: 22px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .rfq-form {
+    display: grid;
+    gap: 14px;
+  }
+
+  .rfq-form label {
+    display: grid;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .rfq-form input,
+  .rfq-form textarea {
+    width: 100%;
+    padding: 11px 12px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font: inherit;
+    text-transform: none;
+  }
+
+  @media (max-width: 760px) {
+    .site-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    nav {
+      justify-content: flex-start;
+    }
+
+    .hero {
+      min-height: 500px;
+    }
+
+    .intent-loop {
+      grid-template-columns: 1fr;
+    }
+
+    .intent-actions {
+      justify-content: flex-start;
+    }
+
+    .rfq-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

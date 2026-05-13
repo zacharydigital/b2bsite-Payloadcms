@@ -1,0 +1,66 @@
+---
+import RfqPanel from "../../components/RfqPanel.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getMaxCarbonSteelThickness, getProducts, getSiteSettings } from "../../lib/content";
+
+const settings = await getSiteSettings();
+const products = await getProducts();
+---
+
+<BaseLayout title={`High-Power Fiber Laser Cutting Machine Category | ${settings.brandName}`} description="Category page for TitanLaser fiber laser cutting machines with power range, material capability, application fit, and quote workflow." pathname="/products/fiber-laser-cutting-machines" siteUrl={settings.siteUrl}>
+  <section class="hero" style={`--hero-image: url('${products[0]?.heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">Category page</p>
+      <h1>High-power fiber laser cutting machine category</h1>
+      <p class="lead">A category-level buying page for factories comparing 12 kW to 30 kW machines, thick plate capability, automation readiness, and export service risk.</p>
+      <a class="button" href="/product-selector">Open selector</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <h2>Category comparison</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Best fit</th>
+              <th>Power</th>
+              <th>Carbon steel max</th>
+              <th>Compliance</th>
+              <th>Next step</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr>
+                <td><strong>{product.model}</strong></td>
+                <td>{product.recommendedFor.join(", ")}</td>
+                <td>{product.powerKw} kW</td>
+                <td>{getMaxCarbonSteelThickness(product)} mm</td>
+                <td>{product.complianceStandards.join(", ")}</td>
+                <td><a href={`/products/${product.slug}`}>View PDP</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="section-inner">
+      <h2>What buyers should compare before RFQ</h2>
+      <div class="grid">
+        <article class="card"><h3>Material mix</h3><p>Do not compare machines by power alone. Ask for cut samples and speed assumptions for the exact carbon steel, stainless steel, and aluminum thickness range.</p></article>
+        <article class="card"><h3>Operating cost</h3><p>Electricity, oxygen, nitrogen, lens consumption, and labor utilization drive the real cost-per-meter after installation.</p></article>
+        <article class="card"><h3>Service model</h3><p>Check installation, remote diagnosis, spare-part stock, training documents, and time-zone coverage before choosing an export supplier.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <RfqPanel title="Request a category-level shortlist" body="Share your target materials, cutting thickness, plant power supply, gas access, and expected monthly cutting hours. TitanLaser will map your requirements to a category and model." />
+  </section>
+</BaseLayout>

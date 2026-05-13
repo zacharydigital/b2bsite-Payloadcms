@@ -1,0 +1,51 @@
+---
+const layers = [
+  {
+    title: "Core entity layer",
+    role: "Money pages and product entities",
+    pages: "PDP, solution pages",
+    signal: "Product facts, specs, quote intent, ProductModel JSON-LD"
+  },
+  {
+    title: "Knowledge support layer",
+    role: "Topical authority and answer extraction",
+    pages: "Pillar, topic clusters, glossary",
+    signal: "Direct answers, FAQs, tables, contextual links"
+  },
+  {
+    title: "Trust proof layer",
+    role: "E-E-A-T and source reliability",
+    pages: "Case studies, expert profiles, About and Team",
+    signal: "Field evidence, credentials, certification, Person and Organization Schema"
+  },
+  {
+    title: "Intent loop layer",
+    role: "Move buyers from research to inquiry",
+    pages: "Calculators, comparison modules, RFQ CTAs",
+    signal: "Interactive engagement, matched products, commercial next steps"
+  }
+];
+---
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>System Layer</th>
+        <th>Role</th>
+        <th>Page Types</th>
+        <th>AEO/GEO Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {layers.map((layer) => (
+        <tr>
+          <td><strong>{layer.title}</strong></td>
+          <td>{layer.role}</td>
+          <td>{layer.pages}</td>
+          <td>{layer.signal}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

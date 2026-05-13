@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCaseStudies, getCaseStudy, getSiteSettings } from "../../lib/content";
+import { caseStudySchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const cases = await getCaseStudies();
+  return cases.map((caseStudy) => ({ params: { slug: caseStudy.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, caseStudy] = await Promise.all([getSiteSettings(), getCaseStudy(slug!)]);
+
+if (!caseStudy) {
+  return Astro.redirect("/");
+}
+
+const product = caseStudy.product;
+---
+
+<BaseLayout
+  title={caseStudy.title}
+  description={caseStudy.summary}
+  pathname={`/case-studies/${caseStudy.slug}`}
+  siteUrl={settings.siteUrl}
+  jsonLdData={caseStudySchema(caseStudy, settings)}
+>
+  <section class="hero" style={`--hero-image: url('${caseStudy.heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">{caseStudy.country} case study</p>
+      <h1>{caseStudy.title}</h1>
+      <p class="lead">{caseStudy.summary}</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <h2>Atomic proof module</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Customer pain point</h3>
+          <p>{caseStudy.painPoint}</p>
+        </article>
+        <article class="card">
+          <h3>Selected model</h3>
+          <p>{product.model}</p>
+          {"slug" in product && <a class="button secondary" href={`/products/${product.slug}`}>Open PDP</a>}
+        </article>
+        <article class="card">
+          <h3>Expert owner</h3>
+          <p>{caseStudy.expert.name}, {caseStudy.expert.role}</p>
+          <a class="button secondary" href={`/experts/${caseStudy.expert.slug}`}>View expert</a>
+        </article>
+      </div>
+      <div class="metric-row">
+        {caseStudy.measuredResults.map((result) => (
+          <div class="metric">
+            <strong>{result.value}</strong>
+            <span>{result.metric}</span>
+            <p>{result.context}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Timestamped factory signal</h2>
+      <div class="grid">
+        {caseStudy.fieldMedia.map((media) => (
+          <article class="card">
+            <img src={media.url} alt={media.caption} loading="lazy" />
+            <h3>{media.caption}</h3>
+            <p>{new Date(media.capturedAt).toLocaleString("en-US")} · {media.location}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

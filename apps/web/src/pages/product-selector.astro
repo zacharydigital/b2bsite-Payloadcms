@@ -1,0 +1,33 @@
+---
+import "../components/react/interactive.css";
+import ProductSelector from "../components/react/ProductSelector";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getProducts, getSiteSettings } from "../lib/content";
+
+const [settings, products] = await Promise.all([getSiteSettings(), getProducts()]);
+const selectorProducts = products.map((product) => ({
+  slug: product.slug,
+  model: product.model,
+  title: product.title,
+  powerKw: product.powerKw,
+  shortDescription: product.shortDescription,
+  recommendedFor: product.recommendedFor,
+  materialCapabilities: product.materialCapabilities
+}));
+---
+
+<BaseLayout title={`Product Selector | ${settings.brandName}`} description="Select material, thickness, application, utilization, and automation level to recommend a TitanLaser machine." pathname="/product-selector" siteUrl={settings.siteUrl}>
+  <section class="hero" style={`--hero-image: url('${products[0]?.heroImage}')`}>
+    <div class="hero-content">
+      <p class="eyebrow">Interactive product configurator</p>
+      <h1>Find the right fiber laser machine</h1>
+      <p class="lead">Use structured product capability fields to recommend a standard model, then add the recommendation directly into the quote cart.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <ProductSelector client:load products={selectorProducts} />
+    </div>
+  </section>
+</BaseLayout>

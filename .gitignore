@@ -1,0 +1,15 @@
+node_modules
+.astro
+.next
+dist
+build
+coverage
+outputs
+.env
+.env.local
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.tsbuildinfo
+payload-types.ts

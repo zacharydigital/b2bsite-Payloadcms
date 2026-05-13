@@ -1,0 +1,86 @@
+---
+import FaqList from "../../components/FaqList.astro";
+import IntentLoopCta from "../../components/IntentLoopCta.astro";
+import SiloLinkMatrix from "../../components/SiloLinkMatrix.astro";
+import TrustProofPanel from "../../components/TrustProofPanel.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCaseStudies, getContentPage, getContentPages, getProducts, getSiteSettings } from "../../lib/content";
+import { articleSchema, claimReviewSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const pages = (await getContentPages()).filter((page) => page.type === "cluster" || page.type === "claimReview");
+  return pages.map((page) => ({ params: { slug: page.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, page, products, cases, allPages] = await Promise.all([
+  getSiteSettings(),
+  getContentPage(slug!),
+  getProducts(),
+  getCaseStudies(),
+  getContentPages()
+]);
+
+if (!page) {
+  return Astro.redirect("/");
+}
+
+const schema = page.type === "claimReview" ? claimReviewSchema(page, settings) : articleSchema(page, settings);
+const pillar = allPages.find((item) => item.type === "pillar");
+const clusters = allPages.filter((item) => item.type === "cluster");
+---
+
+<BaseLayout title={page.title} description={page.seoSummary} pathname={`/topics/${page.slug}`} siteUrl={settings.siteUrl} jsonLdData={schema}>
+  <section class="section">
+    <div class="section-inner content-body">
+      <p class="eyebrow">{page.type}</p>
+      <h1>{page.title}</h1>
+      <p class="lead">{page.heroAnswer}</p>
+      {page.bodyBlocks.map((block) => (
+        <section>
+          <h2>{block.heading}</h2>
+          <p>{block.content}</p>
+        </section>
+      ))}
+    </div>
+  </section>
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Connected entities</h2>
+      <div class="grid">
+        {page.relatedProducts.map((product) => (
+          <article class="card">
+            <h3>{product.model}</h3>
+            <p>{product.shortDescription}</p>
+            <a class="button secondary" href={`/products/${product.slug}`}>Open product</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <h2>Visible AEO answers</h2>
+      <FaqList faqs={page.faqs} />
+    </div>
+  </section>
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Internal silo link structure</h2>
+      <SiloLinkMatrix pillar={pillar} clusters={clusters.filter((item) => item.slug !== page.slug).slice(0, 4)} products={products} cases={cases} />
+    </div>
+  </section>
+  <section class="section">
+    <TrustProofPanel expert={page.expert} compact />
+  </section>
+  <section class="section band">
+    <IntentLoopCta
+      title="Continue from answer to buying decision"
+      body="This cluster page answers a narrow technical question, then routes the buyer to matched machines, cost estimation, and supplier verification."
+      primaryHref="/tools/running-cost-calculator"
+      primaryLabel="Calculate running cost"
+      secondaryHref="/request-quote"
+      secondaryLabel="Prepare RFQ"
+    />
+  </section>
+</BaseLayout>

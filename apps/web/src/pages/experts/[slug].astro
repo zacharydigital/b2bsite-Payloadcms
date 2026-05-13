@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getExpert, getExperts, getSiteSettings } from "../../lib/content";
+import { personSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const experts = await getExperts();
+  return experts.map((expert) => ({ params: { slug: expert.slug } }));
+}
+
+const { slug } = Astro.params;
+const [settings, expert] = await Promise.all([getSiteSettings(), getExpert(slug!)]);
+
+if (!expert) {
+  return Astro.redirect("/");
+}
+---
+
+<BaseLayout
+  title={`${expert.name} | ${expert.role}`}
+  description={expert.bio}
+  pathname={`/experts/${expert.slug}`}
+  siteUrl={settings.siteUrl}
+  jsonLdData={personSchema(expert, settings)}
+>
+  <section class="section">
+    <div class="section-inner">
+      <div class="grid">
+        <img class="card" src={expert.avatar} alt={expert.name} />
+        <div>
+          <p class="eyebrow">Expert persona</p>
+          <h1>{expert.name}</h1>
+          <p class="lead">{expert.role}</p>
+          <p>{expert.bio}</p>
+          <ul class="proof-strip">
+            {expert.credentials.map((credential) => <li>{credential}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section band">
+    <div class="section-inner">
+      <h2>Project evidence</h2>
+      <div class="grid">
+        {expert.projectHighlights.map((project) => (
+          <article class="card"><h3>{project}</h3></article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
