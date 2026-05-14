@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-titanlaser}
+      POSTGRES_USER: ${POSTGRES_USER:-titanlaser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-titanlaser}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-titanlaser} -d ${POSTGRES_DB:-titanlaser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cms:
+    build:
+      context: .
+      dockerfile: Dockerfile.cms
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-dev-secret-change-before-production}
+      DATABASE_URI: ${DATABASE_URI:-postgres://titanlaser:titanlaser@postgres:5432/titanlaser}
+      SITE_URL: ${SITE_URL:-https://demo.yourstudio.com}
+      PUBLIC_PAYLOAD_URL: ${CMS_URL:-https://cms-demo.yourstudio.com}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-auto}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL:-}
+    ports:
+      - "3001:3001"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        SITE_URL: ${SITE_URL:-https://demo.yourstudio.com}
+        PUBLIC_PAYLOAD_URL: ${PUBLIC_PAYLOAD_URL:-https://cms-demo.yourstudio.com/api}
+    restart: unless-stopped
+    depends_on:
+      - cms
+    ports:
+      - "4321:80"
+
+volumes:
+  postgres_data:

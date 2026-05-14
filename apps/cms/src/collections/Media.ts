@@ -2,7 +2,11 @@ import type { CollectionConfig } from "payload";
 
 export const Media: CollectionConfig = {
   slug: "media",
-  upload: true,
+  upload: {
+    disableLocalStorage: true,
+    crop: false,
+    focalPoint: false
+  },
   admin: {
     group: "Core",
     useAsTitle: "alt"

@@ -7,22 +7,24 @@
     "dev": "pnpm generate:importmap && next dev -p 3001",
     "build": "pnpm generate:importmap && next build",
     "generate:importmap": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload generate:importmap",
+    "migrate:create": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload migrate:create",
+    "migrate": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload migrate",
     "start": "next start -p 3001",
     "seed": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts tsx src/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@payloadcms/db-sqlite": "^3.0.0",
+    "@payloadcms/db-postgres": "3.84.1",
     "@payloadcms/next": "^3.0.0",
-    "@payloadcms/payload-cloud": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
+    "@payloadcms/storage-s3": "3.84.1",
+    "@payloadcms/ui": "3.84.1",
     "@titanlaser/content": "workspace:*",
     "cross-env": "^7.0.3",
-    "next": "15.4.11",
+    "next": "16.2.6",
     "payload": "^3.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "sharp": "^0.34.0",
     "tsx": "^4.20.0"
   },
   "devDependencies": {

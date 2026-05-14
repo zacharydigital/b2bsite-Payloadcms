@@ -1,7 +1,5 @@
 node_modules
-.agents
-.claude
-CLAUDE.md
+.git
 .astro
 .next
 .open-next
@@ -11,11 +9,11 @@ build
 coverage
 outputs
 .env
-.env.local
-.dev.vars
+.env.*
+!.env.example
 *.db
 *.db-journal
 *.sqlite
 *.sqlite3
 *.tsbuildinfo
-payload-types.ts
+apps/cms/payload-types.ts
