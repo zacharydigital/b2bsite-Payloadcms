@@ -3,7 +3,7 @@ import type { CollectionConfig } from "payload";
 export const Media: CollectionConfig = {
   slug: "media",
   upload: {
-    disableLocalStorage: true,
+    disableLocalStorage: Boolean(process.env.S3_BUCKET),
     crop: false,
     focalPoint: false
   },

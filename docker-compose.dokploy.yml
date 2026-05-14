@@ -24,6 +24,7 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
+      DB_ADAPTER: postgres
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:-dev-secret-change-before-production}
       DATABASE_URI: ${DATABASE_URI:-postgres://titanlaser:titanlaser@postgres:5432/titanlaser}
       SITE_URL: ${SITE_URL:-https://demo.yourstudio.com}

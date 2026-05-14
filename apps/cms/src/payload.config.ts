@@ -1,4 +1,5 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
 import path from "path";
@@ -21,9 +22,23 @@ const dirname = path.dirname(filename);
 const siteUrl = process.env.SITE_URL || "http://localhost:4321";
 const publicPayloadUrl = process.env.PUBLIC_PAYLOAD_URL || "http://localhost:3001";
 const payloadSecret = process.env.PAYLOAD_SECRET || "dev-secret-change-before-production";
-const databaseUri = process.env.DATABASE_URI || "postgres://titanlaser:titanlaser@localhost:5432/titanlaser";
+const dbAdapter = process.env.DB_ADAPTER || "sqlite";
+const databaseUri = process.env.DATABASE_URI || "file:./titanlaser.local.db";
 const s3Bucket = process.env.S3_BUCKET;
 const s3PublicUrl = process.env.S3_PUBLIC_URL;
+
+const db =
+  dbAdapter === "postgres"
+    ? postgresAdapter({
+        pool: {
+          connectionString: databaseUri
+        }
+      })
+    : sqliteAdapter({
+        client: {
+          url: databaseUri
+        }
+      });
 
 export default buildConfig({
   admin: {
@@ -36,11 +51,7 @@ export default buildConfig({
   globals: [SiteSettings],
   cors: [siteUrl, publicPayloadUrl],
   csrf: [siteUrl, publicPayloadUrl],
-  db: postgresAdapter({
-    pool: {
-      connectionString: databaseUri
-    }
-  }),
+  db,
   editor: lexicalEditor({}),
   graphQL: {
     schemaOutputFile: path.resolve(dirname, "generated-schema.graphql")
