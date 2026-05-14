@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-titanlaser}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-titanlaser} -d ${POSTGRES_DB:-titanlaser}"]
       interval: 10s
@@ -22,6 +24,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - internal
+      - dokploy-network
     environment:
       NODE_ENV: production
       DB_ADAPTER: postgres
@@ -46,10 +51,17 @@ services:
         SITE_URL: ${SITE_URL:-https://demo.yourstudio.com}
         PUBLIC_PAYLOAD_URL: ${PUBLIC_PAYLOAD_URL:-https://cms-demo.yourstudio.com/api}
     restart: unless-stopped
+    networks:
+      - dokploy-network
     depends_on:
       - cms
     ports:
       - "4321:80"
+
+networks:
+  internal:
+  dokploy-network:
+    external: true
 
 volumes:
   postgres_data:
